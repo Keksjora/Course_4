@@ -14,27 +14,28 @@ class Category:
         """Метод для инициализации экземпляра класса. Задаем значения атрибутам экземпляра."""
         self.category_name = category_name
         self.description = description
-        self.__products = products
+        self._products = products
         Category.category_count += 1
         Category.unique_products += len(products)
 
     def add_product(self, product):
         """Метод для добавления товара в категорию."""
-        self.__products.append(product)
+        self._products.append(product)
         Category.unique_products += 1
 
     @property
     def list_of_products(self):
         """Геттер для получения списка товаров в формате: 'Продукт, 80 руб. Остаток: 15 шт."""
         formatted_products = [
-            f"{Product.product_name}, {Product.price} руб. Остаток: {Product.quantity} шт."
-            for product in self.__products
+            f"{product.product_name}, {product.price} руб. Остаток: {product.quantity} шт."
+            for product in self._products
         ]
         return "\n".join(formatted_products)
 
 
 class Product:
     """Класс для продукта"""
+
     product_name: str
     description: str
     price: float
@@ -50,10 +51,10 @@ class Product:
     @classmethod
     def new_product(cls, product_data: dict, products_list: list):
         """Метод класса для создания нового продукта. При наличии дубликата обновляет количество и цену"""
-        product_name = product_data['product_name']
-        description = product_data['description']
-        price = product_data['price']
-        quantity = product_data['quantity']
+        product_name = product_data["product_name"]
+        description = product_data["description"]
+        price = product_data["price"]
+        quantity = product_data["quantity"]
 
         for product in products_list:
             if product.product_name == product_name:
