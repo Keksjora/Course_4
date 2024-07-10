@@ -14,13 +14,13 @@ class Category:
         """Метод для инициализации экземпляра класса. Задаем значения атрибутам экземпляра."""
         self.category_name = category_name
         self.description = description
-        self.__products = products
+        self._products = products
         Category.category_count += 1
         Category.unique_products += len(products)
 
     def add_product(self, product):
         """Метод для добавления товара в категорию."""
-        self.__products.append(product)
+        self._products.append(product)
         Category.unique_products += 1
 
     @property
@@ -28,9 +28,17 @@ class Category:
         """Геттер для получения списка товаров в формате: 'Продукт, 80 руб. Остаток: 15 шт."""
         formatted_products = [
             f"{Product.product_name}, {Product.price} руб. Остаток: {Product.quantity} шт."
-            for product in self.__products
+            for _product in self._products
         ]
         return "\n".join(formatted_products)
+
+    def __len__(self):
+        """Метод для получения количества продуктов в категории."""
+        return sum(product.quantity for product in self._products)
+
+    def __str__(self):
+        """Строковое отображение категории."""
+        return f"{self.category_name}, количество продуктов: {len(self)} шт."
 
 
 class Product:
@@ -81,6 +89,29 @@ class Product:
                     self._price = new_price
         else:
             print("Цена введена некорректная")
+
+    def __str__(self):
+        return f"{self.product_name}, {self.price} руб. Остаток: {self.quantity} шт."
+
+    def __add__(self, other):
+        """Магический метод для сложения продуктов по правилу: цена * количество"""
+        return (self._price * self.quantity) + (other.price * other.quantity)
+
+
+class CategoryIterator:
+    """Класс для итерации по товарам в категории"""
+
+    def __init__(self, category):
+        """Инициализация итератора с категорией"""
+        self._category = category
+        self._index = 0
+
+    def __iter__(self):
+        """Возвращает итератор"""
+        return self
+
+    def __next__(self):
+        pass
 
 
 def get_json_data(path):
