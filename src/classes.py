@@ -28,7 +28,7 @@ class Category:
         """Геттер для получения списка товаров в формате: 'Продукт, 80 руб. Остаток: 15 шт."""
         formatted_products = [
             f"{Product.product_name}, {Product.price} руб. Остаток: {Product.quantity} шт."
-            for product in self._products
+            for _product in self._products
         ]
         return "\n".join(formatted_products)
 
