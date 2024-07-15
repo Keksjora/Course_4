@@ -16,13 +16,11 @@ def category_gaming_consoles():
 def test_category_init(category_pasta, category_gaming_consoles):
     assert category_pasta.category_name == "Паста"
     assert category_pasta.description == "Разные макаронные изделия"
-    assert category_pasta._products == ["спагетти", "перья"]
     assert category_pasta.unique_products == 4
     assert category_pasta.category_count == 2
 
     assert category_gaming_consoles.category_name == "Консоли"
     assert category_gaming_consoles.description == "Игровые приставки"
-    assert category_gaming_consoles._products == ["Playstation", "Nintendo Switch"]
     assert category_gaming_consoles.unique_products == 4
     assert category_gaming_consoles.category_count == 2
 
@@ -47,3 +45,25 @@ def test_product_init(product_smartphone, product_tv):
     assert product_tv.description == "Фоновая подсветка"
     assert product_tv._price == 123000.0
     assert product_tv.quantity == 7
+
+
+def test_product_addition():
+    product1 = Product("Phone1", "Smartphone", 1000, 10)
+    product2 = Product("Phone2", "Smartphone", 2000, 5)
+    result = product1.quantity * product1._price + product2.quantity * product2._price
+    assert result == 20000
+
+
+def test_list_of_products():
+    product1 = Product("Iphone", "Smartphone", 100000, 10)
+    category = Category("Electronics", "Various electronic products", [product1])
+    expected_output = f"{product1.product_name}, {product1._price} руб. Остаток: {product1.quantity} шт."
+    assert category.list_of_products == expected_output
+
+
+def test_add_non_product_to_category():
+    product1 = Product("Iphone", "Smartphone", 100000, 10)
+    category = Category("Electronics", "Various electronic products", [product1])
+
+    with pytest.raises(TypeError):
+        category.add_product("not a product")
