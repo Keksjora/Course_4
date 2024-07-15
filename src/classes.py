@@ -14,23 +14,33 @@ class Category:
         """Метод для инициализации экземпляра класса. Задаем значения атрибутам экземпляра."""
         self.category_name = category_name
         self.description = description
-        self.__products = products
+        self._products = products
         Category.category_count += 1
         Category.unique_products += len(products)
 
     def add_product(self, product):
         """Метод для добавления товара в категорию."""
-        self.__products.append(product)
+        if not isinstance(product, Product):
+            raise TypeError
+        self._products.append(product)
         Category.unique_products += 1
 
     @property
     def list_of_products(self):
         """Геттер для получения списка товаров в формате: 'Продукт, 80 руб. Остаток: 15 шт."""
         formatted_products = [
-            f"{Product.product_name}, {Product.price} руб. Остаток: {Product.quantity} шт."
-            for product in self.__products
+            f"{product.product_name}, {product._price} руб. Остаток: {product.quantity} шт."
+            for product in self._products
         ]
         return "\n".join(formatted_products)
+
+    def __len__(self):
+        """Метод для получения количества продуктов в категории."""
+        return sum(product.quantity for product in self._products)
+
+    def __str__(self):
+        """Строковое отображение категории."""
+        return f"{self.category_name}, количество продуктов: {len(self)} шт."
 
 
 class Product:
@@ -81,6 +91,52 @@ class Product:
                     self._price = new_price
         else:
             print("Цена введена некорректная")
+
+    def __str__(self):
+        return f"{self.product_name}, {self._price} руб. Остаток: {self.quantity} шт."
+
+    def __add__(self, other):
+        """Магический метод для сложения продуктов по правилу: цена * количество"""
+        if type(self) is not type(other):
+            raise TypeError
+        return (self.price * self.quantity) + (other.price * other.quantity)
+
+
+class CategoryIterator:
+    """Класс для итерации по товарам в категории"""
+
+    def __init__(self, category):
+        """Инициализация итератора с категорией"""
+        self._category = category
+        self._index = 0
+
+    def __iter__(self):
+        """Возвращает итератор"""
+        return self
+
+    def __next__(self):
+        pass
+
+
+class Smartphones(Product):
+    """ "Класс смартфонов"""
+
+    def __init__(self, product_name, description, price, quantity, performance, model, storage, color):
+        super().__init__(product_name, description, price, quantity)
+        self.performance = performance
+        self.model = model
+        self.storage = storage
+        self.color = color
+
+
+class Lawngrass(Product):
+    """Класс для газонной травы"""
+
+    def __init__(self, product_name, description, price, quantity, country, germination, color):
+        super().__init__(product_name, description, price, quantity)
+        self.country = country
+        self.germination = germination
+        self.color = color
 
 
 def get_json_data(path):

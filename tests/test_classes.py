@@ -40,10 +40,32 @@ def product_tv():
 def test_product_init(product_smartphone, product_tv):
     assert product_smartphone.product_name == "Samsung Galaxy C23 Ultra"
     assert product_smartphone.description == "256GB, Серый цвет, 200MP камера"
-    assert product_smartphone.price == 180000.0
+    assert product_smartphone._price == 180000.0
     assert product_smartphone.quantity == 5
 
     assert product_tv.product_name == '55" QLED 4K'
     assert product_tv.description == "Фоновая подсветка"
-    assert product_tv.price == 123000.0
+    assert product_tv._price == 123000.0
     assert product_tv.quantity == 7
+
+
+def test_product_addition():
+    product1 = Product("Phone1", "Smartphone", 1000, 10)
+    product2 = Product("Phone2", "Smartphone", 2000, 5)
+    result = product1.quantity * product1._price + product2.quantity * product2._price
+    assert result == 20000
+
+
+def test_list_of_products():
+    product1 = Product("Iphone", "Smartphone", 100000, 10)
+    category = Category("Electronics", "Various electronic products", [product1])
+    expected_output = f"{product1.product_name}, {product1._price} руб. Остаток: {product1.quantity} шт."
+    assert category.list_of_products == expected_output
+
+
+def test_add_non_product_to_category():
+    product1 = Product("Iphone", "Smartphone", 100000, 10)
+    category = Category("Electronics", "Various electronic products", [product1])
+
+    with pytest.raises(TypeError):
+        category.add_product("not a product")
