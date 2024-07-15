@@ -20,6 +20,8 @@ class Category:
 
     def add_product(self, product):
         """Метод для добавления товара в категорию."""
+        if not isinstance(product, Product):
+            raise TypeError
         self._products.append(product)
         Category.unique_products += 1
 
@@ -27,8 +29,8 @@ class Category:
     def list_of_products(self):
         """Геттер для получения списка товаров в формате: 'Продукт, 80 руб. Остаток: 15 шт."""
         formatted_products = [
-            f"{Product.product_name}, {Product.price} руб. Остаток: {Product.quantity} шт."
-            for _product in self._products
+            f"{product.product_name}, {product._price} руб. Остаток: {product.quantity} шт."
+            for product in self._products
         ]
         return "\n".join(formatted_products)
 
@@ -91,11 +93,13 @@ class Product:
             print("Цена введена некорректная")
 
     def __str__(self):
-        return f"{self.product_name}, {self.price} руб. Остаток: {self.quantity} шт."
+        return f"{self.product_name}, {self._price} руб. Остаток: {self.quantity} шт."
 
     def __add__(self, other):
         """Магический метод для сложения продуктов по правилу: цена * количество"""
-        return (self._price * self.quantity) + (other.price * other.quantity)
+        if type(self) is not type(other):
+            raise TypeError
+        return (self.price * self.quantity) + (other.price * other.quantity)
 
 
 class CategoryIterator:
@@ -112,6 +116,27 @@ class CategoryIterator:
 
     def __next__(self):
         pass
+
+
+class Smartphones(Product):
+    """ "Класс смартфонов"""
+
+    def __init__(self, product_name, description, price, quantity, performance, model, storage, color):
+        super().__init__(product_name, description, price, quantity)
+        self.performance = performance
+        self.model = model
+        self.storage = storage
+        self.color = color
+
+
+class Lawngrass(Product):
+    """Класс для газонной травы"""
+
+    def __init__(self, product_name, description, price, quantity, country, germination, color):
+        super().__init__(product_name, description, price, quantity)
+        self.country = country
+        self.germination = germination
+        self.color = color
 
 
 def get_json_data(path):
