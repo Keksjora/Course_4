@@ -1,4 +1,17 @@
 import json
+from abc import ABC, abstractmethod
+
+
+class Mixin:
+    """Миксин для вывода информации о созданном объекте"""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        print(f"Создан объект: {self}")
+
+    def __repr__(self):
+        attributes = [f"{key}: {value}" for key, value in self.__dict__.items()]
+        return f"Создан объект {self.__class__.__name__} с атрибутами {', '.join(attributes)}"
 
 
 class Category:
@@ -43,7 +56,35 @@ class Category:
         return f"{self.category_name}, количество продуктов: {len(self)} шт."
 
 
-class Product:
+class Products(ABC):
+    """Абстрактный класс для продуктов"""
+
+    def __init__(self, product_name, description, price, quantity):
+        self.product_name = product_name
+        self.description = description
+        self.price = price
+        self.quantity = quantity
+
+    @abstractmethod
+    def __str__(self):
+        pass
+
+    @abstractmethod
+    def __add__(self, other):
+        pass
+
+    @property
+    @abstractmethod
+    def product_price(self):
+        pass
+
+    @product_price.setter
+    @abstractmethod
+    def product_price(self, new_price):
+        pass
+
+
+class Product(Mixin, Products):
     """Класс для продукта"""
 
     product_name: str
@@ -52,11 +93,8 @@ class Product:
     quantity: int
 
     def __init__(self, product_name, description, price, quantity):
-        """Метод для инициализации экземпляра класса. Задаем значения атрибутам экземпляра."""
-        self.product_name = product_name
-        self.description = description
+        super().__init__(product_name, description, price, quantity)
         self._price = price
-        self.quantity = quantity
 
     @classmethod
     def new_product(cls, product_data: dict, products_list: list):
@@ -69,7 +107,7 @@ class Product:
         for product in products_list:
             if product.product_name == product_name:
                 product.quantity += quantity
-                product.price = max(product.price, price)
+                product._price = max(product._price, price)
                 return product
 
         new_product = cls(product_name, description, price, quantity)
@@ -79,27 +117,27 @@ class Product:
     @property
     def product_price(self):
         """Геттер для получения цены"""
-        return self.price
+        return self._price
 
     @product_price.setter
     def product_price(self, new_price):
         """Сеттер для установки цены с проверкой > 0"""
         if new_price > 0:
-            if self.price > new_price:
+            if self._price > new_price:
                 user_agreement = input('Понизить цену? "y" - если да, "n" - если нет :')
                 if user_agreement.lower() == "y":
                     self._price = new_price
         else:
-            print("Цена введена некорректная")
+            print("Цена введена некорректно")
 
     def __str__(self):
-        return f"{self.product_name}, {self._price} руб. Остаток: {self.quantity} шт."
+        return f"{self.product_name}, {self.price} руб. Остаток: {self.quantity} шт."
 
     def __add__(self, other):
         """Магический метод для сложения продуктов по правилу: цена * количество"""
         if type(self) is not type(other):
-            raise TypeError
-        return (self.price * self.quantity) + (other.price * other.quantity)
+            raise TypeError("Нельзя складывать продукты разных типов")
+        return self._price * self.quantity + other._price * other.quantity
 
 
 class CategoryIterator:
@@ -115,11 +153,17 @@ class CategoryIterator:
         return self
 
     def __next__(self):
-        pass
+        """Возвращает следующий продукт в категории"""
+        if self._index < len(self._category.__products):
+            product = self._category.__products[self._index]
+            self._index += 1
+            return product
+        else:
+            raise StopIteration
 
 
 class Smartphones(Product):
-    """ "Класс смартфонов"""
+    """Класс для смартфонов"""
 
     def __init__(self, product_name, description, price, quantity, performance, model, storage, color):
         super().__init__(product_name, description, price, quantity)
@@ -150,11 +194,7 @@ def create_category_classes(products_data):
     """Создает классы категорий"""
     categories = []
     for category_data in products_data:
-        category = Category(
-            category_data.get("name"),
-            category_data.get("description"),
-            category_data.get("products"),
-        )
+        category = Category(category_data.get("name"), category_data.get("description"), [])
         categories.append(category)
     return categories
 
