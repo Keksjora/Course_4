@@ -1,22 +1,28 @@
 import pytest
+
 from src.classes import Category, Product
 
 
 @pytest.fixture
 def category_pasta():
-    category = Category("Паста", "Разные макаронные изделия", [
-        Product("спагетти", "Макароны", 50.0, 20),
-        Product("перья", "Макароны", 60.0, 15)
-    ])
+    category = Category(
+        "Паста",
+        "Разные макаронные изделия",
+        [Product("спагетти", "Макароны", 50.0, 20), Product("перья", "Макароны", 60.0, 15)],
+    )
     return category
 
 
 @pytest.fixture
 def category_gaming_consoles():
-    category = Category("Консоли", "Игровые приставки", [
-        Product("Playstation", "Игровая консоль", 40000.0, 10),
-        Product("Nintendo Switch", "Игровая консоль", 30000.0, 8)
-    ])
+    category = Category(
+        "Консоли",
+        "Игровые приставки",
+        [
+            Product("Playstation", "Игровая консоль", 40000.0, 10),
+            Product("Nintendo Switch", "Игровая консоль", 30000.0, 8),
+        ],
+    )
     return category
 
 
