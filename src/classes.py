@@ -34,7 +34,9 @@ class Category:
     def add_product(self, product):
         """Метод для добавления товара в категорию."""
         if not isinstance(product, Product):
-            raise TypeError
+            raise TypeError("Товар должен быть экземпляром класса Product")
+        if product.quantity == 0:
+            raise ValueError("Товар с нулевым количеством не может быть добавлен")
         self._products.append(product)
         Category.unique_products += 1
 
@@ -54,6 +56,16 @@ class Category:
     def __str__(self):
         """Строковое отображение категории."""
         return f"{self.category_name}, количество продуктов: {len(self)} шт."
+
+
+def average_products_price(self):
+    """Метод для подсчета средней цены всех товаров в категории"""
+    try:
+        total_price = sum(product.price for product in self.__products)
+        average_price = total_price / len(self.__products)
+        return average_price
+    except ZeroDivisionError:
+        return 0
 
 
 class Products(ABC):
